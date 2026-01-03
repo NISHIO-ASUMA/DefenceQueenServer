@@ -1,0 +1,2 @@
+# DefenceQueenServer
+就職作品制作のランキングサーバープロジェクト
