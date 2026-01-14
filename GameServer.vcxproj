@@ -141,13 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="load.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tcplistener.cpp" />
     <ClCompile Include="tcp_client.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="load.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="tcplistener.h" />
     <ClInclude Include="tcp_client.h" />
