@@ -119,7 +119,7 @@ int main(void)
 			UpdateRanking(&ranking, recvScore);
 			SaveRanking(&ranking);
 
-			// クライアントへランキング送信	(20バイト)
+			// クライアントへランキング送信
 			int sendSize = sizeof(int) * SERVERINFO::MAX_DATA;
 			int sent = 0;
 			SOCKET sock = pTcpclient->GetSock();
@@ -232,12 +232,3 @@ void SaveRanking(Ranking* ranking)
 	// ファイルを閉じる
 	SaveFile.close();
 }
-
-//// デバッグ表示
-//printf("ランキングのスコア\n");
-
-//// サーバー側に表示
-//for (int nScoreData = 0; nScoreData < SERVERINFO::MAX_DATA; nScoreData++)
-//{
-//	printf("%d位: %d\n", nScoreData + 1, ranking.nScores[nScoreData]);
-//}
