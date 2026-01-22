@@ -13,13 +13,11 @@
 #include <crtdbg.h>
 #include <memory>
 #include <functional>
-#include <fstream>
-#include <iostream>
-#include <array>
 #include <algorithm>
 #include "main.h"
 #include "time.h"
 #include "tcplistener.h"
+#include "ranking.h"
 
 //*******************************************************************
 // 定数宣言空間
@@ -27,25 +25,7 @@
 namespace SERVERINFO
 {
 	constexpr int MAX_WORD = 512;	// 最大文字列数
-	constexpr int MAX_DATA = 5;		// 最大ランキングデータ数
-	constexpr const char* FILE_NAME = "data/SCORE/Ranking.bin"; // データを保持しているファイルパス名
 };
-
-//*******************************************************************
-// ランキング用構造体
-//*******************************************************************
-struct Ranking
-{
-	int nScores[SERVERINFO::MAX_DATA];	// スコア格納配列
-};
-
-//*******************************************************************
-// 関数宣言空間
-//*******************************************************************
-void UpdateRanking(Ranking* ranking,const int& nScore);
-void LoadRanking(Ranking* ranking);
-void SaveRanking(Ranking* ranking);
-void ResetRanking(Ranking* ranking);
 
 //===================================================================
 // メインエントリーポイント関数
@@ -73,8 +53,11 @@ int main(void)
 	CTcpclient* pTcpclient = nullptr;
 
 	// ランキングデータを初期化する
-	Ranking ranking = {};
-	LoadRanking(&ranking);
+	CRanking* pRanking = CRanking::Create();
+	if (pRanking == nullptr) return 0;
+
+	// 初期ランキング読み込み
+	pRanking->Load();
 
 	// nullptrチェック
 	if (pTcplisener != nullptr && pTcplisener->Init(PORT) == true)
@@ -116,18 +99,20 @@ int main(void)
 			printf("受信スコア: %d\n", recvScore);
 
 			// ランキング更新
-			UpdateRanking(&ranking, recvScore);
-			SaveRanking(&ranking);
+			pRanking->Update(recvScore);
+
+			// 保存する
+			pRanking->Save();
 
 			// クライアントへランキング送信
-			int sendSize = sizeof(int) * SERVERINFO::MAX_DATA;
+			int sendSize = sizeof(int) * CRanking::MAX_RANKDATA;
 			int sent = 0;
 			SOCKET sock = pTcpclient->GetSock();
 
 			while (sent < sendSize)
 			{
-				// データ送信
-				int ret = send(sock,(char*)ranking.nScores + sent,sendSize - sent,0);
+				// ランキングのデータ送信
+				int ret = pRanking->Send(sock);
 
 				if (ret <= 0)
 				{
@@ -142,6 +127,15 @@ int main(void)
 
 	// 終了メッセージ表示
 	printf("\nサーバーを閉じます\n");
+
+	//=====================================
+	// ランキングクラス終了処理
+	//=====================================
+	if (pRanking != nullptr)
+	{
+		delete pRanking;
+		pRanking = nullptr;
+	}
 
 	//=====================================
 	// クライアントクラス終了処理
@@ -169,66 +163,4 @@ int main(void)
 
 	// 終了コード
 	return 0;
-}
-//===================================================================
-// ランキング初期化処理
-//===================================================================
-void ResetRanking(Ranking* ranking)
-{
-	for (int nCnt = 0; nCnt < SERVERINFO::MAX_DATA; nCnt++)
-	{
-		ranking->nScores[nCnt] = 0;
-	}
-}
-//===================================================================
-// ランキング更新処理
-//===================================================================
-void UpdateRanking(Ranking* ranking, const int& nScore)
-{
-	// 5位以下なら無視
-	if (nScore <= ranking->nScores[SERVERINFO::MAX_DATA - 1])
-		return;
-
-	// 最下位と入れ替え
-	ranking->nScores[SERVERINFO::MAX_DATA - 1] = nScore;
-
-	// 降順ソート
-	std::sort(ranking->nScores,ranking->nScores + SERVERINFO::MAX_DATA,std::greater<int>());
-}
-//===================================================================
-// ランキング読み込み処理
-//===================================================================
-void LoadRanking(Ranking* ranking)
-{
-	// バイナリ数値ファイルを開く
-	std::ifstream Openfile(SERVERINFO::FILE_NAME, std::ios::binary);
-
-	if (!Openfile)
-	{
-		// ファイルが無ければ初期化
-		ResetRanking(ranking);
-		SaveRanking(ranking);
-		return;
-	}
-
-	// 数値データを格納する
-	Openfile.read((char*)ranking->nScores, sizeof(int) * SERVERINFO::MAX_DATA);
-	
-	// ファイルを閉じる
-	Openfile.close();
-}
-//===================================================================
-// ランキング書き出し処理
-//===================================================================
-void SaveRanking(Ranking* ranking)
-{
-	// 書き出すファイルを指定
-	std::ofstream SaveFile(SERVERINFO::FILE_NAME, std::ios::binary);
-	if (!SaveFile) return;
-
-	// 配列データを書き出す
-	SaveFile.write((const char*)ranking->nScores, sizeof(int) * SERVERINFO::MAX_DATA);
-
-	// ファイルを閉じる
-	SaveFile.close();
 }

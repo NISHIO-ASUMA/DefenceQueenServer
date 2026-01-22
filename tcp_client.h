@@ -28,7 +28,6 @@ public:
 	int Send(char* pSendData, int nSendDataSize);	 // データ送信
 	int Recv(char* pRecvData, int nRecvDataSize);	 // データ受信
 	void Uninit(void);								 // 終了(切断)処理
-	int RecvChar(char* pRecvData, const char* pRecv);
 	bool Init(SOCKET socket);			// オーバーロード初期化
 	SOCKET GetSock(void) { return m_sock; }
 

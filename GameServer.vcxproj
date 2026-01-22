@@ -143,11 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ranking.cpp" />
     <ClCompile Include="tcplistener.cpp" />
     <ClCompile Include="tcp_client.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="ranking.h" />
     <ClInclude Include="tcplistener.h" />
     <ClInclude Include="tcp_client.h" />
   </ItemGroup>
