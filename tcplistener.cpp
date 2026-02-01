@@ -54,7 +54,7 @@ bool CTcplistener::Init(int nPortNum)
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
 
 	bind(m_sockServer, (struct sockaddr*)&addr, sizeof(addr));
-	listen(m_sockServer, 30);
+	listen(m_sockServer, 999);
 
 	// メッセージ表示
 	printf("接続を待機中...\n");

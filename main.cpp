@@ -62,10 +62,11 @@ int main(void)
 	// nullptrチェック
 	if (pTcplisener != nullptr && pTcplisener->Init(PORT) == true)
 	{
+		// 接続待ち
+		pTcpclient = pTcplisener->Accept();
+
 		while (1)
 		{
-			// 接続待ち
-			pTcpclient = pTcplisener->Accept();
 			if (pTcpclient == nullptr) continue;
 
 			// 格納変数
