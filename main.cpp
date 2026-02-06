@@ -14,18 +14,10 @@
 #include <memory>
 #include <functional>
 #include <algorithm>
+#include <ctime>
 #include "main.h"
-#include "time.h"
 #include "tcplistener.h"
 #include "ranking.h"
-
-//*******************************************************************
-// 定数宣言空間
-//*******************************************************************
-namespace SERVERINFO
-{
-	constexpr int MAX_WORD = 512;	// 最大文字列数
-};
 
 //===================================================================
 // メインエントリーポイント関数
@@ -67,6 +59,7 @@ int main(void)
 
 		while (1)
 		{
+			// もしnullなら待つ
 			if (pTcpclient == nullptr) continue;
 
 			// 格納変数
@@ -106,22 +99,22 @@ int main(void)
 			pRanking->Save();
 
 			// クライアントへランキング送信
-			int sendSize = sizeof(int) * CRanking::MAX_RANKDATA;
-			int sent = 0;
+			int nSendSize = sizeof(int) * CRanking::Infomation::MAX_RANKDATA;
+			int nSent = 0;
 			SOCKET sock = pTcpclient->GetSock();
 
-			while (sent < sendSize)
+			while (nSent < nSendSize)
 			{
 				// ランキングのデータ送信
-				int ret = pRanking->Send(sock);
+				int nRankingSendData = pRanking->Send(sock);
 
-				if (ret <= 0)
+				if (nRankingSendData <= 0)
 				{
 					printf("送信失敗\n");
 					break;
 				}
 
-				sent += ret;
+				nSent += nRankingSendData;
 			}
 		}
 	}
@@ -143,7 +136,6 @@ int main(void)
 	//=====================================
 	if (pTcpclient != nullptr)
 	{
-		// 破棄
 		pTcpclient->Uninit();
 		delete pTcpclient;
 		pTcpclient = nullptr;

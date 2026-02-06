@@ -40,7 +40,5 @@ public:
 private:
 
 	CTcpclient* m_pClient; // 受け入れクライアント
-
 	SOCKET m_sockServer;	// サーバー用ソケット
 };
-

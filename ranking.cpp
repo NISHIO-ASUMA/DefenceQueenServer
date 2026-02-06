@@ -44,14 +44,14 @@ CRanking* CRanking::Create(void)
 void CRanking::Update(const int& nScore)
 {
 	// 引数の値がランキングの5位以下の値なら無視
-	if (nScore <= m_ScoreInfo.nScores[MAX_RANKDATA - 1])
+	if (nScore <= m_ScoreInfo.nScores[Infomation::MAX_RANKDATA - 1])
 		return;
 
 	// 最下位と入れ替え
-	m_ScoreInfo.nScores[MAX_RANKDATA - 1] = nScore;
+	m_ScoreInfo.nScores[Infomation::MAX_RANKDATA - 1] = nScore;
 
 	// 降順ソート
-	std::sort(m_ScoreInfo.nScores, m_ScoreInfo.nScores + MAX_RANKDATA, std::greater<int>());
+	std::sort(m_ScoreInfo.nScores, m_ScoreInfo.nScores + Infomation::MAX_RANKDATA, std::greater<int>());
 }
 //=========================================================
 // 読み込み関数
@@ -59,7 +59,7 @@ void CRanking::Update(const int& nScore)
 void CRanking::Load(void)
 {
 	// バイナリ数値ファイルを開く
-	std::ifstream Openfile(FILE_NAME, std::ios::binary);
+	std::ifstream Openfile(Infomation::FILE_NAME, std::ios::binary);
 
 	if (!Openfile)
 	{
@@ -70,7 +70,7 @@ void CRanking::Load(void)
 	}
 
 	// 数値データを格納する
-	Openfile.read((char*)m_ScoreInfo.nScores, sizeof(int) * MAX_RANKDATA);
+	Openfile.read((char*)m_ScoreInfo.nScores, sizeof(int) * Infomation::MAX_RANKDATA);
 
 	// ファイルを閉じる
 	Openfile.close();
@@ -81,11 +81,11 @@ void CRanking::Load(void)
 void CRanking::Save(void)
 {
 	// 書き出すファイルを指定
-	std::ofstream SaveFile(FILE_NAME, std::ios::binary);
+	std::ofstream SaveFile(Infomation::FILE_NAME, std::ios::binary);
 	if (!SaveFile) return;
 
 	// 配列データを書き出す
-	SaveFile.write((const char*)m_ScoreInfo.nScores, sizeof(int) *MAX_RANKDATA);
+	SaveFile.write((const char*)m_ScoreInfo.nScores, sizeof(int) * Infomation::MAX_RANKDATA);
 
 	// ファイルを閉じる
 	SaveFile.close();
@@ -96,7 +96,7 @@ void CRanking::Save(void)
 void CRanking::Reset(void)
 {
 	// 構造体の要素をクリアする
-	for (int nCnt = 0; nCnt < MAX_RANKDATA; nCnt++)
+	for (int nCnt = 0; nCnt < Infomation::MAX_RANKDATA; nCnt++)
 	{
 		m_ScoreInfo.nScores[nCnt] = 0;
 	}
@@ -106,5 +106,5 @@ void CRanking::Reset(void)
 //=========================================================
 int CRanking::Send(SOCKET sock) const
 {
-	return send(sock,(const char*)m_ScoreInfo.nScores,sizeof(int) * MAX_RANKDATA,0);
+	return send(sock,(const char*)m_ScoreInfo.nScores,sizeof(int) * Infomation::MAX_RANKDATA,0);
 }
