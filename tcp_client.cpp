@@ -10,6 +10,7 @@
 //*********************************************************
 #include "tcp_client.h"
 #include <cstdio>
+#include <iostream>
 
 //=========================================================
 // コンストラクタ
@@ -38,14 +39,14 @@ bool CTcpclient::Init(const char* pIPAddress, int nPortNum)
 	if (m_sock == INVALID_SOCKET)
 	{
 		// 例外メッセージ
-		printf("\nソケットの作成に失敗しました 終了します\n");
+		std::cout << "\nソケットの作成に失敗しました 終了します\n" << std::endl;
 
 		// falseを返す
 		return false;
 	}
 
 	// サーバー接続情報設定
-	pIPAddress = "127.0.0.1"; // IPアドレスは引数設定
+	pIPAddress = "127.0.0.1";
 	struct sockaddr_in serverAddr = { 0 };
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(nPortNum);	// ポート番号

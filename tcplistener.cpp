@@ -10,6 +10,7 @@
 //*********************************************************
 #include "tcplistener.h"
 #include <cstdio>
+#include <iostream>
 
 //=========================================================
 // コンストラクタ
@@ -40,7 +41,7 @@ bool CTcplistener::Init(int nPortNum)
 	// 例外処理
 	if (m_sockServer == INVALID_SOCKET)
 	{
-		printf("\nソケットの作成に失敗しました。終了します。\n");
+		std::cout << "\nソケットの作成に失敗しました。終了します。\n" << std::endl;
 		WSACleanup();
 		return 0;
 	}
@@ -54,10 +55,10 @@ bool CTcplistener::Init(int nPortNum)
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
 
 	bind(m_sockServer, (struct sockaddr*)&addr, sizeof(addr));
-	listen(m_sockServer, 999);
+	listen(m_sockServer, EXITNUMBER);
 
 	// メッセージ表示
-	printf("接続を待機中...\n");
+	std::cout << "接続を待機中...\n" << std::endl;
 
 	// 結果を返す
 	return true;
@@ -97,7 +98,7 @@ CTcpclient* CTcplistener::Accept(void)
 	// 接続失敗時
 	if (socket == INVALID_SOCKET)
 	{
-		printf("クライアントの接続に失敗しました。\n");
+		std::cout << "クライアントの接続に失敗しました。\n" << std::endl;
 		return nullptr;
 	}
 
@@ -117,7 +118,11 @@ CTcpclient* CTcplistener::Accept(void)
 	// クライアント情報の表示
 	const char* pClientIP = inet_ntoa(clientAddr.sin_addr);
 
-	printf("\n--- クライアント接続 ---\nIP: %s, Port: %d\n", pClientIP, PORT);
+	std::cout 
+		<< "\n--- クライアント接続 ---\n"
+		<< "IP   : " << pClientIP << "\n"
+		<< "Port : " << PORT << "\n"
+		<< std::endl;
 
 	// ポインタを返す
 	return m_pClient;

@@ -11,10 +11,9 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <crtdbg.h>
-#include <memory>
-#include <functional>
 #include <algorithm>
 #include <ctime>
+#include <iostream>
 #include "main.h"
 #include "tcplistener.h"
 #include "ranking.h"
@@ -36,7 +35,7 @@ int main(void)
 	// 例外メッセージ設定
 	if (WSAStartup(WINSOCK_VERSION, &wsaData) != 0)
 	{
-		printf("\n初期化に失敗しました。終了します。\n");
+		std::cout << "\n初期化に失敗しました。終了します。\n";
 		return 0;
 	}
 
@@ -68,7 +67,7 @@ int main(void)
 			// データをクライアントから受信
 			int nRecvByte = recv(pTcpclient->GetSock(),(char*)&recvScore,sizeof(int),0);
 
-			// エラー処理
+			// サイズが違ったら
 			if (nRecvByte != sizeof(int))
 			{
 				pTcpclient->Uninit();
@@ -78,9 +77,9 @@ int main(void)
 			}
 
 			// サーバー終了コマンド
-			if (recvScore == 0 || recvScore == 999)
+			if (recvScore == 0 || recvScore == EXITNUMBER)
 			{
-				printf("終了コマンドを受信\n");
+				std::cout << "終了コマンドを受信\n" << std::endl;
 
 				// クライアント切断処理
 				pTcpclient->Uninit();
@@ -89,8 +88,8 @@ int main(void)
 				break;
 			}
 
-			// サーバー表示
-			printf("受信スコア: %d\n", recvScore);
+			// サーバーに取得したスコアを表示
+			std::cout << "受信スコア: " << recvScore << std::endl;
 
 			// ランキング更新
 			pRanking->Update(recvScore);
@@ -110,7 +109,7 @@ int main(void)
 
 				if (nRankingSendData <= 0)
 				{
-					printf("送信失敗\n");
+					std::cout << "送信失敗\n" << std::endl;
 					break;
 				}
 
@@ -120,7 +119,7 @@ int main(void)
 	}
 
 	// 終了メッセージ表示
-	printf("\nサーバーを閉じます\n");
+	std::cout << "サーバーを閉じます\n" << std::endl;
 
 	//=====================================
 	// ランキングクラス終了処理
